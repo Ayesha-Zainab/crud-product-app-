@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        table {
+            width: 66%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-left: 18%;
+        }
+
+        td {
+            text-align: center;
+        }
+
+        tr:nth-child(odd) {
+            background-color: white;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <p class="text-5xl font-medium text-center pt-14">Products System</p>
+
+    <div class=" ml-[18%] pt-6 space-y-2">
+
+        <label class="block text-base">Product Name:</label>
+        <div></div>
+        <input type="text" placeholder=""
+            class="border-2 border-zinc-300 w-[80%] py-1.5 rounded-lg  focus:outline-none focus:ring-2 focus:ring-blue-600 "
+            id="producername">
+
+
+        <label class="block text-base">product price:</label>
+        <input type="text" placeholder=""
+            class="border-2 border-zinc-300 w-[80%] py-1.5  rounded-lg  focus:outline-none focus:ring-2 focus:ring-blue-600"
+            id="productprice">
+
+        <label class="block text-base">Product catagory:</label>
+        <div
+            class="border-2 border-gray-300 w-[80%] py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 flex justify-end">
+            <select id="pc" class="border-none outline-none  w-full ">
+                <option value="Tv">Tv</option>
+                <option value="Mobile">Mobile</option>
+                <option value="Laptop">Laptop</option>
+            </select>
+        </div>
+
+        <label class="block text-base">Product condition:</label>
+        <div
+            class="border-2 border-gray-300 w-[80%] py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 flex justify-end">
+            <select id="Pcon" class="border-none outline-none  w-full ">
+                <option value="Excellent" class="bg-green-600">Excellent</option>
+                <option value="Good" class=" bg-yellow-400">Good</option>
+                <option value="Bad" class="bg-red-600">Bad</option>
+            </select>
+
+        </div>
+        <div class=" flex justify-center pt-2 gap-4 w-[80%]">
+            <button id="btn" class="bg-green-700 text-white h-[40px] w-[120px] rounded-lg hover:bg-green-800">Add
+                Product</button>
+            <button class="hide" onclick="handleupdate()" id="update">update</button>
+            <button
+                class="border-2 border-green-700 text-green-700  h-[40px] w-[120px] rounded-lg hover:bg-green-700 hover:text-white">Clear
+                Form</button>
+
+        </div>
+        <input type="text " placeholder="Search By Name... "
+            class="border-2 border-zinc-300 w-[80%] py-1.5  rounded-lg  focus:outline-none focus:ring-2 focus:ring-blue-600 pl-4">
+    </div>
+    <table id="itemTable">
+        <tr>
+            <th>Index</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Category</th>
+            <th>Condition</th>
+            <th>Actions</th>
+        </tr>
+
+    </table>
+
+
+    <script>
+        
+
+        var producername = document.querySelector('#producername')
+        var productprice = document.querySelector('#productprice')
+        var pc = document.querySelector('#pc')
+        var Pcon = document.querySelector('#Pcon')
+        const btn = document.querySelector("#btn")
+        var table = document.querySelector('#itemTable')
+        var update = document.querySelector('#update')
+
+       
+       
+
+        btn.addEventListener('click', () => {
+            if (producername.value == "" && productprice.value == "") {
+                alert('fill the all inputs')
+                return;
+            }
+            var obj = {
+                producername: producername.value,
+                productprice: productprice.value,
+                pc: pc.value,
+                Pcon: Pcon.value,
+            };
+            var data = localStorage.getItem('items') ? JSON.parse(localStorage.getItem('items')) : []
+            data.push(obj);
+            localStorage.setItem('items', JSON.stringify(data));
+            producername.value = ""
+            productprice.value = ""
+            showValue()
+
+
+
+        })
+        function showValue() {
+            table.innerHTML = '<tr><th>Index</th><th>Name</th><th>Price</th><th>Category</th><th>Condition</th><th>Actions</th></tr>';
+            var data = JSON.parse(localStorage.getItem('items'))
+            
+            if (data == null) {
+            }
+            else {
+                data.map((ele, index) => {
+                    if (ele.Pcon == 'Excellent') {
+                newclass = 'bg-green-500'
+            }
+            else if (ele.Pcon == 'Good') {
+                newclass = 'bg-yellow-500'
+            }
+            else {
+                newclass = 'bg-red-500'
+            }
+
+                    table.innerHTML += `<tr>
+        <td>${index}</td>
+        <td>${ele.producername}</td>
+        <td>${ele.productprice}</td>
+        <td>${ele.pc}</td>
+        <td class="${newclass}">${ele.Pcon}</td>
+
+        <td>
+            <button  onclick='handleEdit(${index})'><i class="fa-solid fa-pen text-yellow-400 "></i></button>  
+            <button  onclick='handledel(${index})'><i class="fa-solid fa-trash text-red-700 "></i></button> 
+            
+        </td>
+    </tr>`;
+                });
+            }
+        }
+        showValue()
+
+        function handledel(i) {
+            console.log(i);
+            var data = JSON.parse(localStorage.getItem('items'))
+            data.splice(i, 1)
+            localStorage.setItem('items', JSON.stringify(data))
+            showValue()
+        }
+        var myindex
+       
+        function handleEdit(i) {
+            var data = JSON.parse(localStorage.getItem('items')) 
+            producername.value = data[i].producername
+            productprice.value = data[i].productprice
+            pc.value= data[i].pc
+            Pcon.value=data[i].Pcon
+            myindex= i
+             showValue()
+            update.classList.remove('hide')
+            btn.classList.add('hide')
+
+        }
+
+        function handleupdate() {
+            var data = JSON.parse(localStorage.getItem('items'));
+            data[myindex].producername = producername.value
+            data[myindex].productprice = productprice.value
+            data[myindex].pc = pc.value
+            data[myindex].Pcon = Pcon.value
+            console.log(myindex, "button");
+            localStorage.setItem('items', JSON.stringify(data));
+            showValue();
+            update.classList.add('hide')
+            btn.classList.remove('hide')
+            producername.value = ''
+            productprice.value = ''
+        }
+
+
+    </script>
+
+
+
+
+
+
+
+</body>
+
+</html>
